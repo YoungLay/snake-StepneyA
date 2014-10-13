@@ -10,7 +10,6 @@ gameInitialize ();
 snakeInitialize ();
 setInterval(gameLoop, 2000/30);
 
-
 function gameInitialize() {
     var canvas = document.getElementById("game-screen");
     context = canvas.getContext("2d");
@@ -18,8 +17,8 @@ function gameInitialize() {
     screenWidth = window.innerWidth;
     screenHeight = window.innerHeight;
     
-    canvas.width = screenWidth;
     canvas.height = screenHeight;
+    canvas.width = screenWidth;
 }
 
 function gameLoop() {
@@ -28,20 +27,18 @@ function gameLoop() {
     snakeDraw ();
 }
 
-
 function gameDraw() {
     context.fillStyle = "rgb(180, 250, 213)";
     context.fillRect (0, 0, screenWidth, screenHeight);
 }
 
-
-function snakeIntialize(){
+function snakeInitialize(){
     snake = [];
     snakeLength = 15;
-    snakeSize = 20;
+    snakeSize = 30;
     
-    for(var index = 0; index < snakeLength; index++){
-        snake.push({
+    for(var index = snakeLength - 1; index >= 0; index--) {
+        snake.push( {
             x: index,
             y: 0
         });
@@ -50,11 +47,13 @@ function snakeIntialize(){
 
 
 function snakeDraw(){
-    for(var index = 0; index <snake.length; index++){
+    for(var index = 0; index < snake.length; index++){
         context.fillStyle = "white";
         context.fillRect(snake[index].x * snakeSize, snake[index].y * snakeSize, snakeSize);
     }
-    }
+    
+}
+    
 
 
 function snakeUpdate(){
