@@ -89,7 +89,7 @@ function snakeUpdate(){
     if(snakeDirection == "down") {
       snakeHeadY++;
     }
-    else {
+    else if(snakeDirectin == "right"){
       snakeHeadX++;  
     }
     
@@ -124,6 +124,14 @@ function setFoodPosition() {
     food.y = randomY;
 }
 
+/* ---------------------------------------------------------------------------
+ * Input Functions
+ * ---------------------------------------------------------------------------
+ */
 function keyboardHandler(event) {
     console.log(event);
+    
+    if(event.keyCode == "39") {
+        snakeDirection = "right";
+    }
 }
