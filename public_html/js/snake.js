@@ -15,6 +15,10 @@ var screenWidth;
 var screenHeight;
 
 var gameState;
+var gameOverMenu;
+var restartButton;
+var playHUD;
+var scoreboard;
 
 /* ---------------------------------------------------------------------------
  * Executing Game Code
@@ -43,11 +47,21 @@ function gameInitialize() {
 
     document.addEventListener("keydown", keyboardHandler);
     
+    gameOverMenu = document.getElementById("gameOver");
+    centerMenuPosition(gameOverMenu);
+    
+    restartButton = document.getElementById("restartButton");
+    restartButton.addEventListener("click", gameRestart);
+    
+    playHUD = document.getElementById("playHUD");
+    scoreboard = document.getElementById("scoreboard");
+    
     setState("PLAY");
 }
 
 function gameLoop() {
     gameDraw();
+    drawScoreboard();
     if (gameState == "PLAY") {
         snakeUpdate();
         snakeDraw();
@@ -58,6 +72,13 @@ function gameLoop() {
     function gameDraw() {
         context.fillStyle = "rgb(180, 250, 213)";
         context.fillRect(0, 0, screenWidth, screenHeight);
+    }
+    
+    function gameRestart() {
+        snakeInitialize();
+        foodInitialize();
+        hideMenu(gameOverMenu);
+        setState("PLAY");
     }
     /* ---------------------------------------------------------------------------
      * Snake Functions
@@ -81,7 +102,7 @@ function gameLoop() {
 
     function snakeDraw() {
         for (var index = 0; index < snake.length; index++) {
-            context.fillStyle = "white";
+            context.fillStyle = "gold";
             context.fillRect(snake[index].x * snakeSize, snake[index].y * snakeSize, snakeSize, snakeSize);
         }
 
@@ -107,6 +128,9 @@ function gameLoop() {
 
         checkFoodCollisions(snakeHeadX, snakeHeadY);
         checkWallCollisions(snakeHeadX, snakeHeadY);
+        checkSnakeCollisions(snakeHeadX, snakeHeadY)
+        
+        
         var snakeTail = snake.pop();
         snakeTail.x = snakeHeadX;
         snakeTail.y = snakeHeadY;
@@ -127,7 +151,7 @@ function gameLoop() {
     }
 
     function foodDraw() {
-        context.fillStyle = "white";
+        context.fillStyle = "blue";
         context.fillRect(food.x * snakeSize, food.y * snakeSize, snakeSize, snakeSize);
     }
     function setFoodPosition() {
@@ -166,18 +190,30 @@ function gameLoop() {
 
     function checkFoodCollisions(snakeHeadX, snakeHeadY) {
         if (snakeHeadX == food.x && snakeHeadY == food.y) {
+            console.log("Food Collision")
             snake.push({
                 x: 0,
                 y: 0
 
             });
             snakeLength++;
+            
         }
     }
 
     function checkWallCollisions(snakeHeadX, snakeHeadY) {
         if (snakeHeadX * snakeSize >= screenWidth || snakeHeadX * snakeSize < 0) {
            setState("GAME OVER");
+        }
+        
+    }
+    
+    function checkSnakeCollisions(snakeHeadX, snakeHeadY) {
+        for(var index = 1; index < snake.length; index++) {
+            if(snakeHeadX == snake[index].x && snakeHeadY == snake[index].y) {
+                setState("GAME OVER");
+                return;
+            }
         }
     }
 
@@ -186,6 +222,37 @@ function gameLoop() {
      * ----------------------------------------------------------------------------
      */
 
-    function setState(state){
+    function setState(state) {
          gameState = state;
-        }      
+         showMenu(state);
+    }
+    
+    /* -------------------------------------------------------------------------
+     * Menu Functions
+     * ----------------------------------------------------------------------------
+     */
+    function displayMenu(menu) {
+        menu.style.visibility = "visible";
+    }
+    
+    function hideMenu(menu) {
+        menu.style.visibility = "hidden";
+    }
+    
+    function showMenu(state){
+       if(state == "GAME OVER") {
+           displayMenu(gameOverMenu);
+       }
+       else if(state == "PLAY") {
+           displayMenu(playHUD)
+       }
+    }
+    
+    function centerMenuPosition(menu) {
+        menu.style.top = (screenHeight / 2) - (menu.offsetHeight / 2) + "px";
+        menu.style.left = (screenWidth / 2) - (menu.offsetWidth / 2) + "px";
+    }
+   
+   function drawScoreboard() {
+       scoreboard.innerHTML = "Length: " + snakeLength;
+   }
